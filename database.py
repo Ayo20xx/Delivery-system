@@ -1,11 +1,22 @@
-import json
+import sqlite3
 
-shipments= {}
+#make connection
+connection=sqlite3.connect("sqlite")
+#create cursor 
+cursor=connection.cursor()
+#1 create table 
+cursor.execute("""
+               CREATE TABLE IF NOT EXISTS shipment (
+               id INTEGER,
+               content TEXT,
+               weight REAL,
+               status TEXT)""")
 
-with open("shipments.json") as json_file:
-    data=json.load(json_file)
-    for value in data:
-        shipments[value["id"]]=value
-
-
-print("after load" ,shipments)
+#2 add shipment data 
+cursor.execute("""INSERT INTO shipment
+                  VALUES(12701,'palm trees',8.5,'placed')
+               """)
+#save data 
+connection.commit()
+#close when done 
+connection.close()
