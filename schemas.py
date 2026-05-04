@@ -12,7 +12,7 @@ class ShipmentStatus(str,Enum):
         delivered="delivered"
 
 class ShipmentRead(Baseshipment):
-    status : str
+    status : ShipmentStatus
 
 class ShipmentCreate(Baseshipment):
   pass

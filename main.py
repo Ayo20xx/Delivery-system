@@ -1,49 +1,10 @@
-from fastapi import FastAPI,status
-from typing import Any
-from fastapi import HTTPException
+from fastapi import FastAPI,status,HTTPException
 from schemas import ShipmentCreate,ShipmentRead,ShipmentUpdate
-
+from .database import shipments
 
 
 app= FastAPI()
-shipments = { 
-    12701:{    
-        "weight": 1.2,
-        "content": "wooden table",
-        "status": "in transit",
-    },
-    12702:{    
-        "weight": 2.5,
-        "content": "office chair",
-        "status": "delivered",
-    },
-    12703:{    
-        "weight": 0.8,
-        "content": "laptop",
-        "status": "pending",
-    },
-    12704:{    
-        "weight": 5.3,
-        "content": "bookshelf",
-        "status": "in transit",
-    },
-    12705:{    
-        "weight": 1.1,
-        "content": "desk lamp",
-        "status": "delivered",
-    },
-    12706:{    
-        "weight": 3.7,
-        "content": "monitor stand",
-        "status": "pending",
-    },
-    12707:{    
-        "weight": 0.5,
-        "content": "keyboard",
-        "status": "in transit",
-    }
-}
-    
+
 
 
 
@@ -57,18 +18,14 @@ def get_shipment_id(id: int ) :
   
    return shipments[id]
        
-@app.post("/shipment")  
-def submit_shipment(body:ShipmentCreate)-> dict[str,Any]:
+@app.post("/shipment",response_model=None)  
+def submit_shipment(shipment:ShipmentCreate)-> dict[str,int]:
     new_ID= max(shipments.keys()) +1
-    shipments[new_ID]={
-
-        "content": body.content,
-        "weight": body.weight,
-        "status": "placed"
+    shipments[new_ID] = {
+        **shipment.model_dump(),
+        "status": "placed",
     }
     return {"id" :new_ID}
-
-
 
 
 @app.patch("/shipment",response_model=ShipmentRead)
