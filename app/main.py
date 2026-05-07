@@ -50,6 +50,10 @@ def patch_shipment(id:int, shipment_update:ShipmentUpdate,session:SessionDep) ->
         detail="no data was found",
      )
     shipment=session.get(Shipment,id)
+    shipment = session.get(Shipment, id)
+    if not shipment:          # add this
+        raise HTTPException(status_code=404, detail="shipment not found")
+
     shipment.sqlmodel_update(update)
     session.add(shipment)
     session.commit()
@@ -59,8 +63,8 @@ def patch_shipment(id:int, shipment_update:ShipmentUpdate,session:SessionDep) ->
       
 @app.delete("/shipment/{id}")
 def delete_shipment(id:int,session:SessionDep) -> dict[str,str]:
-    session.delete(session.get(Shipment,id))
-    if not Shipment:
+    shipment=session.delete(session.get(Shipment,id))
+    if not shipment:
         raise HTTPException(
             status_code=404,
             detail="shipment not found"
