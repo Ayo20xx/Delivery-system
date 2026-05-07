@@ -3,9 +3,9 @@ A REST API for managing deliveries built with FastAPI.
 
 ## Tech Stack
 - FastAPI
-- SQLAlchemy
+- SQLite
 - Python
 
 ## How to Run
 pip install -r requirements.txt
-uvicorn main:app --reload
+uvicorn app.main:app --reload
