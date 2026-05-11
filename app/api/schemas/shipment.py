@@ -1,6 +1,6 @@
 from pydantic import BaseModel,Field
 from datetime import datetime
-from .database.model import ShipmentStatus
+from ...database.model import ShipmentStatus
 
 
 class Baseshipment(BaseModel):
