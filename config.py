@@ -15,7 +15,7 @@ class DbSettings(BaseSettings):
     )
     @property
     def POSTGRES_URL (self):
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@host:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_Server}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
 settings= DbSettings()

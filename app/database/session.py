@@ -1,5 +1,3 @@
-from typing import Annotated
-from fastapi import Depends
 from sqlalchemy.ext.asyncio import create_async_engine,AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
@@ -15,7 +13,7 @@ engine=create_async_engine(
 
 async def create_db_tables():
     async with engine.begin() as connection:
-        from .model import Shipment # noqa: F401
+        from app.database.model import Shipment # noqa: F401
         await connection.run_sync(SQLModel.metadata.create_all)
         
 
@@ -28,4 +26,3 @@ async def get_session():
     with async_session as session:
         yield session
 
-SessionDep=Annotated[AsyncSession,Depends(get_session)]
