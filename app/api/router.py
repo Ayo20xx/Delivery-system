@@ -39,7 +39,7 @@ async def patch_shipment(id:int, shipment_update:ShipmentUpdate,Service:ServiceD
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="no data was found",
      )
-    shipment=await Service.update(id,shipment_update)
+    shipment=await Service.update(id,update)
     return shipment
       
 @router.delete("/shipment/{id}")

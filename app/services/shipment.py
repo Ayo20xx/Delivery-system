@@ -37,10 +37,11 @@ class ShipmentService:
         return shipment
 
     async def delete(self,id:int ) -> int:
-        shipment=await self.session.delete(await self.get(id))
+        shipment = await self.session.get(Shipment, id)
         if not shipment:
             raise HTTPException(
                 status_code=404,
                 detail="shipment not found"
             )
+        shipment = await self.session.get(Shipment, id)
         await self.session.commit()
