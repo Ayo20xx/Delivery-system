@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine,AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlmodel import SQLModel
 from config import settings
 
@@ -18,11 +18,11 @@ async def create_db_tables():
         
 
 async def get_session():
-    async_session=sessionmaker(
+    async_session=async_sessionmaker(
         bind=engine,
         class_= AsyncSession,
         expire_on_commit= False,
     )
-    with async_session as session:
+    async with async_session() as session:
         yield session
 
