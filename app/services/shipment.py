@@ -25,7 +25,7 @@ class ShipmentService:
 
     async def update (self,id:int,shipment_update:ShipmentUpdate) -> Shipment:
         shipment=await self.get(id)
-        shipment = self.session.get(Shipment,id)
+        
         if not shipment:          # add this
             raise HTTPException(status_code=404, detail="shipment not found")
 
