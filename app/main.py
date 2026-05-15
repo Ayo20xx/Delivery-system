@@ -16,3 +16,10 @@ app= FastAPI(
 
 
 app.include_router(router)
+
+
+
+
+@app.post("/seller/signup")
+def register_seller(seller): 
+    pass
