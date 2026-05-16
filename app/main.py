@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from app.api.router import router
+from app.api.schemas import master_router
 from .database.session import create_db_tables
 
 
@@ -15,11 +15,6 @@ app= FastAPI(
 )
 
 
-app.include_router(router)
+app.include_router(master_router)
 
 
-
-
-@app.post("/seller/signup")
-def register_seller(seller): 
-    pass
