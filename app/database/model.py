@@ -25,4 +25,4 @@ class seller (SQLModel, table = True ):
       name = str 
 
       email : EmailStr
-      password : str 
+      password_hash: str 
