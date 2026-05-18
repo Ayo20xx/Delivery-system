@@ -2,7 +2,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.schemas.seller import SellerCreate
 
-class ShipmentService:
+class SellerService:
     def __init__(self, session: AsyncSession):
         self.session = session
         
