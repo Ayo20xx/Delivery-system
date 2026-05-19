@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine,AsyncSession,async_sessionmaker
 from sqlmodel import SQLModel
-from config import settings
+from config import DbSetting
 
 engine=create_async_engine(
-    url=settings.POSTGRES_URL,
+    url=DbSetting.POSTGRES_URL,
     echo=True,
     
 

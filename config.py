@@ -18,5 +18,16 @@ class DbSettings(BaseSettings):
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_Server}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
-settings= DbSettings()
+Db_settings= DbSettings()
 
+
+class SecuritySettings(BaseSettings):
+    JWT_SECRET : str
+    JWT_ALGORITHM : str
+
+
+    model_config=SettingsConfigDict(
+        env_file="./.env",
+        env_ignore= True,
+        extra="ignore",
+    )
