@@ -1,4 +1,6 @@
 
+from fastapi import HTTPException,status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.schemas.seller import SellerCreate
 from app.database.model import seller
@@ -22,3 +24,13 @@ class SellerService:
          await self.session.refresh(new_seller)
 
          return new_seller
+    
+    async def token(self,email,password)-> str :
+       
+       result = await self.session.execute (select(seller).where(seller.email == email))
+       Seller=result.scalar()
+
+       if Seller is None or  password_context.verify(password,seller.password_hash):
+           raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Email or password is  incorrect ")
+        
+       
