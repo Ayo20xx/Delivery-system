@@ -17,5 +17,9 @@ async def register_seller(seller:SellerCreate,service:ServiceSellerDep):
 
 
 @router.post("/login")
-async def Login_seller(request_form:Annotated[OAuth2PasswordRequestForm,Depends()]):
-    request_form.password
+async def Login_seller(request_form:Annotated[OAuth2PasswordRequestForm,Depends()],service:ServiceSellerDep):
+    token=await service.token(request_form.username,request_form.password)
+    return{
+        "access_token": token,
+        "type" : "jwt",
+    }

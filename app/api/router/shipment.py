@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from app.api.dependencies import ServiceDep
+from app.api.dependencies import ShipmentServiceDep
 
 
 from fastapi import HTTPException, status
 
 from app.database.model import Shipment
-from schemas.shipment import ShipmentCreate, ShipmentRead, ShipmentUpdate
+from app.api.schemas.shipment import ShipmentCreate, ShipmentRead, ShipmentUpdate
 
 router=APIRouter()
 
@@ -15,7 +15,7 @@ router=APIRouter()
 
 
 @router.get("/shipment/{id}" ,response_model= ShipmentRead,)
-async def get_shipment_id(id: int, Service:ServiceDep):
+async def get_shipment_id(id: int, Service:ShipmentServiceDep):
    shipment=await Service.get(id)
    if  shipment is None:
        raise HTTPException(
@@ -26,13 +26,13 @@ async def get_shipment_id(id: int, Service:ServiceDep):
    return shipment
        
 @router.post("/shipment")  
-async def submit_shipment(shipment:ShipmentCreate, Service:ServiceDep)-> Shipment:
+async def submit_shipment(shipment:ShipmentCreate, Service:ShipmentServiceDep)-> Shipment:
     return await Service.add(shipment)
    
    
 
 @router.patch("/shipment/{id}",response_model=ShipmentRead)
-async def patch_shipment(id:int, shipment_update:ShipmentUpdate,Service:ServiceDep) -> ShipmentRead:
+async def patch_shipment(id:int, shipment_update:ShipmentUpdate,Service:ShipmentServiceDep) -> ShipmentRead:
     update=shipment_update.model_dump(exclude_none=True)
     if not update:
      raise HTTPException(
@@ -43,7 +43,7 @@ async def patch_shipment(id:int, shipment_update:ShipmentUpdate,Service:ServiceD
     return shipment
       
 @router.delete("/shipment/{id}")
-async def delete_shipment(id:int,Service:ServiceDep) -> dict[str,str]:
+async def delete_shipment(id:int,Service:ShipmentServiceDep) -> dict[str,str]:
    
     await Service.delete(id)
     

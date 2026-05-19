@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from app.api.schemas import master_router
+from .api.routes import master_router
 from .database.session import create_db_tables
 
 

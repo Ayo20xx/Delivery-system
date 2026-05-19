@@ -9,7 +9,7 @@ from app.database.model import seller
 from passlib.context import CryptContext
 import jwt
 from config import SecuritySettings
-password_context = CryptContext(schemes=["bycrypt"],deprecated="auto")
+password_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 
 
 class SellerService:
