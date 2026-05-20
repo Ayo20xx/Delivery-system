@@ -31,3 +31,5 @@ class SecuritySettings(BaseSettings):
         env_ignore= True,
         extra="ignore",
     )
+
+security_settings = SecuritySettings()

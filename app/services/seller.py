@@ -8,7 +8,7 @@ from app.api.schemas.seller import SellerCreate
 from app.database.model import seller
 from passlib.context import CryptContext
 import jwt
-from config import SecuritySettings
+from config import security_settings
 password_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 
 
@@ -20,7 +20,7 @@ class SellerService:
     async def add(self, Credentials:SellerCreate) -> seller :
          new_seller=seller(
              **Credentials.model_dump(exclude=["password"]),
-             password_hash= password_context.hash(Credentials.password)
+             password_hash= password_context.hash(Credentials.password.encode("utf-8")[:72])
          )
          self.session.add(new_seller)
          await self.session.commit()
@@ -33,19 +33,22 @@ class SellerService:
        result = await self.session.execute (select(seller).where(seller.email == email))
        Seller=result.scalar()
 
-       if Seller is None or  password_context.verify(password,seller.password_hash):
+       if Seller is None or not password_context.verify(password,Seller.password_hash):
            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Email or password is  incorrect ")
        token=jwt.encode(
            payload={
                "user":{
-                   "name": seller.name,
-                   "email": seller.email,
+                   "name": Seller.name,
+                   "email": Seller.email,
                },
                "exp": datetime.now() + timedelta(days=1)
            },
-           algorithm= SecuritySettings.JWT_ALGORITHM,
-           key= SecuritySettings.JWT_SECRET,
+           algorithm= security_settings.JWT_ALGORITHM,
+           key= security_settings.JWT_SECRET,
+       )
+       jwt.decode(
+           "token"
        )
         
        return token
-       
+  
