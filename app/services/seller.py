@@ -38,7 +38,7 @@ class SellerService:
        token= generate_access_token(data={
            "user" :{
                "name" : Seller.name,
-               "id" : Seller.id,
+               "id" : str(Seller.id),
            }
            
        })

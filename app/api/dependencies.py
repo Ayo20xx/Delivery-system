@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from app.core.security import Oauth2_scheme
 from app.database.model import seller
 from app.database.redis import is_jti_blacklisted
@@ -35,7 +37,7 @@ async def get_access_token(token:Annotated[str,Depends(Oauth2_scheme)]):
 
 async def get_current_data(token_data: Annotated[dict,Depends(get_access_token)],session :SessionDep):
      
-     return await session.get(seller,token_data["user"]["id"])
+     return await session.get(seller,UUID(token_data["user"]["id"]))
      
 
 
