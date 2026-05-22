@@ -1,5 +1,6 @@
 from app.core.security import Oauth2_scheme
 from app.database.model import seller
+from app.database.redis import is_jti_blacklisted
 from app.database.session import get_session
 from app.services.seller import SellerService
 from app.services.shipment import ShipmentService
@@ -22,10 +23,10 @@ ShipmentServiceDep = Annotated[ShipmentService,Depends(get_shipment_service)]
 ServiceSellerDep = Annotated[SellerService,Depends(get_seller_service)]
 
 
-def get_access_token(token:Annotated[str,Depends(Oauth2_scheme)]):
+async def get_access_token(token:Annotated[str,Depends(Oauth2_scheme)]):
         data= decode_access_token(token)
 
-        if data is None:
+        if data is None or await is_jti_blacklisted(data["jti"]):
             raise HTTPException(
                 status_code= status.HTTP_401_UNAUTHORIZED,
                 detail="invalid access token"
