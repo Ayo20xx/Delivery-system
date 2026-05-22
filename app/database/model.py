@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class ShipmentStatus(str,Enum):
@@ -19,6 +19,13 @@ class Shipment (SQLModel,table=True):
     status : ShipmentStatus
     estimated_delivery : datetime
 
+    seller_id : int = Field(foreign_key="seller.id")
+
+    Seller: "seller" = Relationship(back_populates="shipments",sa_relationship_kwargs={"lazy":"selectin"})
+
+
+
+
 class seller (SQLModel, table = True ):
       
       id: int = Field(default=None,primary_key=True)
@@ -26,3 +33,5 @@ class seller (SQLModel, table = True ):
 
       email : EmailStr
       password_hash: str 
+
+      shipments = list[Shipment] =Relationship(back_populates="Seller", sa_relationship_kwargs={"lazy":"selectin"})
