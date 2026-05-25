@@ -46,4 +46,4 @@ class seller (SQLModel, table = True ):
       email : EmailStr
       password_hash: str 
 
-      shipments = list[Shipment] =Relationship(back_populates="Seller", sa_relationship_kwargs={"lazy":"selectin"})
+      shipments : list[Shipment] =Relationship(back_populates="Seller", sa_relationship_kwargs={"lazy":"selectin"})
