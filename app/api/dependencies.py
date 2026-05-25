@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from app.core.security import Oauth2_scheme
-from app.database.model import seller
+from app.core.security import Oauth2_scheme_seller,Oauth2_scheme_DeliveryPartner
+from app.database.model import seller,DeliveryPartner
 from app.database.redis import is_jti_blacklisted
 from app.database.session import get_session
 from app.services.seller import SellerService
@@ -25,7 +25,7 @@ ShipmentServiceDep = Annotated[ShipmentService,Depends(get_shipment_service)]
 ServiceSellerDep = Annotated[SellerService,Depends(get_seller_service)]
 
 
-async def get_access_token(token:Annotated[str,Depends(Oauth2_scheme)]):
+async def _get_access_token(token:str):
         data= decode_access_token(token)
 
         if data is None or await is_jti_blacklisted(data["jti"]):
@@ -35,10 +35,31 @@ async def get_access_token(token:Annotated[str,Depends(Oauth2_scheme)]):
             )
         return data
 
-async def get_current_data(token_data: Annotated[dict,Depends(get_access_token)],session :SessionDep):
-     
-     return await session.get(seller,UUID(token_data["user"]["id"]))
-     
+async def get_seller_access_token (token:Annotated[str,Depends(Oauth2_scheme_seller)]):
+     return _get_access_token(token)
 
+async def get_partner_access_token (token:Annotated[str,Depends(Oauth2_scheme_DeliveryPartner)]):
+     return _get_access_token(token)
 
-SellerDep = Annotated[seller,Depends(get_current_data)]
+async def get_seller_data(token_data: Annotated[dict,Depends(get_seller_access_token)],session :SessionDep):
+     Seller= await session.get(seller,UUID(token_data["user"]["id"]))
+     if seller is None:
+          raise HTTPException(
+               status_code=status.HTTP_401_UNAUTHORIZED,
+               detail= "Not authourized",
+          )
+     return Seller
+     
+     
+async def get_partner_data(token_data: Annotated[dict,Depends(get_partner_access_token)],session :SessionDep):
+     Partner= await session.get(DeliveryPartner,UUID(token_data["user"]["id"]))
+     if Partner is None:
+          raise HTTPException(
+               status_code=status.HTTP_401_UNAUTHORIZED,
+               detail= "Not authourized",
+          )
+     return Partner
+     
+SellerDep = Annotated[seller,Depends(get_seller_data)]
+
+DeliveryDep = Annotated[seller,Depends(get_partner_data)]

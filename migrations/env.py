@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlmodel import SQLModel
 from app.config import Db_settings
 from alembic import context
-from app.database.model import Shipment,seller  # noqa: F401
+from app.database.model import Shipment,seller ,DeliveryPartner # noqa: F401
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
