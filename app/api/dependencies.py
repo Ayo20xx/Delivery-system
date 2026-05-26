@@ -62,4 +62,4 @@ async def get_partner_data(token_data: Annotated[dict,Depends(get_partner_access
      
 SellerDep = Annotated[seller,Depends(get_seller_data)]
 
-DeliveryDep = Annotated[seller,Depends(get_partner_data)]
+DeliveryDep = Annotated[DeliveryPartner,Depends(get_partner_data)]

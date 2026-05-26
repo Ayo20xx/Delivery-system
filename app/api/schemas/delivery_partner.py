@@ -13,7 +13,8 @@ class DeliveryPartnerRead (BaseDeliveryPartner):
      pass
 
 class DeliveryPartnerUpdate (BaseModel):
-     pass
+     serviceable_zip_codes : list[int]
+     max_handling_capacity : int 
 
 
 class DeliveryPartnerCreate(BaseDeliveryPartner):

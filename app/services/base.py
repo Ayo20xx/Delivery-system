@@ -12,7 +12,7 @@ class BaseService:
     async def _get (self,id:UUID):
         return await self.session.get(self.model,id)
     
-    async def _create(self,entity:SQLModel):
+    async def _add(self,entity:SQLModel):
         self.session.add(entity)
         self.session.commit()
         self.session.refresh(entity)
