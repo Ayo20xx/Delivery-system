@@ -5,15 +5,16 @@ from app.api.schemas.shipment import ShipmentCreate,ShipmentUpdate,ShipmentStatu
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime,timedelta
 from fastapi import HTTPException
+from app.services.Delivery_partner import DeliveryPartnerService
 from app.services.base import BaseService
 
 
 
 
 class ShipmentService(BaseService):
-    def __init__(self,session:AsyncSession):
+    def __init__(self,session:AsyncSession,partner_service:DeliveryPartnerService):
         super().__init__(Shipment,session)
-        
+        self.partner_service= partner_service
 
     async def get(self,id:UUID)-> Shipment | None:
         return await self.session._get(id)
@@ -25,6 +26,8 @@ class ShipmentService(BaseService):
                 estimated_delivery=datetime.now() + timedelta(days=3),
                 seller_id= Seller.id
             )
+         partner=await self.partner_service.assign_shipment(new_shipment)
+         new_shipment.delivery_partner_id = partner.id
          return await self._add(new_shipment)
          
 

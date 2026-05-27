@@ -4,6 +4,7 @@ from app.core.security import Oauth2_scheme_seller,Oauth2_scheme_DeliveryPartner
 from app.database.model import seller,DeliveryPartner
 from app.database.redis import is_jti_blacklisted
 from app.database.session import get_session
+from app.services.Delivery_partner import DeliveryPartnerService
 from app.services.seller import SellerService
 from app.services.shipment import ShipmentService
 from fastapi import Depends, HTTPException,status
@@ -16,13 +17,16 @@ from app.utils import decode_access_token
 SessionDep=Annotated[AsyncSession,Depends(get_session)]
 
 async def get_shipment_service(session:SessionDep):
-    return ShipmentService(session)
+    return ShipmentService(session,DeliveryPartnerService(session))
 
 async def get_seller_service(session:SessionDep):
     return SellerService(session)
 
 ShipmentServiceDep = Annotated[ShipmentService,Depends(get_shipment_service)]
 ServiceSellerDep = Annotated[SellerService,Depends(get_seller_service)]
+
+def get_delivery_partner_service(session:SessionDep):
+     return DeliveryPartnerService(session)
 
 
 async def _get_access_token(token:str):
@@ -63,3 +67,6 @@ async def get_partner_data(token_data: Annotated[dict,Depends(get_partner_access
 SellerDep = Annotated[seller,Depends(get_seller_data)]
 
 DeliveryDep = Annotated[DeliveryPartner,Depends(get_partner_data)]
+
+DeliveryPartnerServiceDep = Annotated[DeliveryPartnerService,Depends(get_delivery_partner_service)]
+

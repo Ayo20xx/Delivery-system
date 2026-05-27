@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter
-from app.api.dependencies import SellerDep, ShipmentServiceDep
+from app.api.dependencies import DeliveryPartnerServiceDep, SellerDep, ShipmentServiceDep
 
 
 from fastapi import HTTPException, status
@@ -34,7 +34,7 @@ async def submit_shipment(shipment:ShipmentCreate, Service:ShipmentServiceDep, s
    
 
 @router.patch("/shipment/{id}",response_model=ShipmentRead)
-async def patch_shipment(id:int, shipment_update:ShipmentUpdate,Service:ShipmentServiceDep) -> ShipmentRead:
+async def Update_shipment(id:UUID, shipment_update:ShipmentUpdate,Service:ShipmentServiceDep,partner:DeliveryPartnerServiceDep) -> ShipmentRead:
     update=shipment_update.model_dump(exclude_none=True)
     if not update:
      raise HTTPException(
@@ -45,7 +45,7 @@ async def patch_shipment(id:int, shipment_update:ShipmentUpdate,Service:Shipment
     return shipment
       
 @router.delete("/shipment/{id}")
-async def delete_shipment(id:int,Service:ShipmentServiceDep) -> dict[str,str]:
+async def delete_shipment(id:UUID,Service:ShipmentServiceDep) -> dict[str,str]:
    
     await Service.delete(id)
     
