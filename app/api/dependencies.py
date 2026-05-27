@@ -5,6 +5,7 @@ from app.database.model import seller,DeliveryPartner
 from app.database.redis import is_jti_blacklisted
 from app.database.session import get_session
 from app.services.Delivery_partner import DeliveryPartnerService
+from app.services.Shipment_event import ShipmentEventService
 from app.services.seller import SellerService
 from app.services.shipment import ShipmentService
 from fastapi import Depends, HTTPException,status
@@ -17,7 +18,7 @@ from app.utils import decode_access_token
 SessionDep=Annotated[AsyncSession,Depends(get_session)]
 
 async def get_shipment_service(session:SessionDep):
-    return ShipmentService(session,DeliveryPartnerService(session))
+    return ShipmentService(session,DeliveryPartnerService(session),ShipmentEventService(session))
 
 async def get_seller_service(session:SessionDep):
     return SellerService(session)
