@@ -41,6 +41,10 @@ class Shipment (SQLModel,table=True):
     delivery_partner_id : UUID = Field(foreign_key="delivery_partner.id")
     delivery_partner : "DeliveryPartner"= Relationship(back_populates="shipments",sa_relationship_kwargs={"lazy":"selectin"})
 
+    @property
+    def status(self):
+           return self.timeline[-1].status if len(self.timeline) > 0 else None
+
 class ShipmentEvent(SQLModel,table=True):
        __tablename__="shipment_event"
        id : UUID =Field(sa_column=Column(

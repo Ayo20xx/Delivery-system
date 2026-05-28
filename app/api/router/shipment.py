@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter
-from app.api.dependencies import DeliveryPartnerServiceDep, SellerDep, ShipmentServiceDep
+from app.api.dependencies import  DeliveryPartnerServiceDep, SellerDep, ShipmentServiceDep
 
 
 from fastapi import HTTPException, status
@@ -41,8 +41,8 @@ async def Update_shipment(id:UUID, shipment_update:ShipmentUpdate,Service:Shipme
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="no data was found",
      )
-    shipment=await Service.update(id,update)
-    return shipment
+
+    return await Service.update(id,shipment_update,partner)
       
 @router.delete("/shipment/{id}")
 async def delete_shipment(id:UUID,Service:ShipmentServiceDep) -> dict[str,str]:
