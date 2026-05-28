@@ -1,7 +1,7 @@
 
 from uuid import UUID
 
-from app.api.dependencies import DeliveryPartnerServiceDep
+from app.api.dependencies import DeliveryPartnerServiceDep, SellerDep
 from app.database.model import Shipment,seller
 from app.api.schemas.shipment import ShipmentCreate,ShipmentUpdate,ShipmentStatus
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -33,12 +33,13 @@ class ShipmentService(BaseService):
          partner=await self.partner_service.assign_shipment(new_shipment)
          new_shipment.delivery_partner_id = partner.id
          shipment= await self._add(new_shipment)
-         await self.event_service.add(
+         event= await self.event_service.add(
              shipment = new_shipment.id,
              location=seller.zip_code,
              status=ShipmentStatus.placed,
              description=f"assigned to {partner.name}"
          )
+         shipment.timeline.appent(event)
          return shipment
          
 
@@ -67,6 +68,21 @@ class ShipmentService(BaseService):
                 )
             return await self._update(shipment)
             
+    async def cancel(self,id:UUID,seller:SellerDep)-> Shipment:
+         shipment = await self.get(id)
+
+         if shipment.seller_id != seller.id:
+              raise HTTPException(
+                   status_code= status.HTTP_401_UNAUTHORIZED,
+                   details = "Not Authorized"
+              )
+         event= await self.event_service.add(
+             shipment=shipment,
+             status =ShipmentStatus.cancelled
+        )
+         shipment.timeline.append(event)
+         return shipment 
+         
 
     async def delete(self,id:int ) -> int:
         shipment = await self.get(id)

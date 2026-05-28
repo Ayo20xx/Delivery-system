@@ -1,3 +1,4 @@
+
 from datetime import datetime
 from enum import Enum
 from pydantic import EmailStr
@@ -12,6 +13,7 @@ class ShipmentStatus(str,Enum):
         in_transit="in_transit"
         out_for_delivery= "out_for_delivery"
         delivered="delivered"
+        cancelled = "cancelled"
 
 class Shipment (SQLModel,table=True):
     __tablename__="shipment"
@@ -121,7 +123,7 @@ class DeliveryPartner(SQLModel,table = True) :
 
       @property
       def active_shipments(self):
-             return [shipment for shipment in self.shipments if shipment.status != ShipmentStatus.delivered]
+             return [shipment for shipment in self.shipments if shipment.status != ShipmentStatus.delivered or shipment.status != ShipmentStatus.cancelled]
       @property
       def current_handling_capacity(self):
              return self.max_handling_capacity - len(self.active_shipments)
