@@ -1,3 +1,4 @@
+from pydantic import EmailStr, SecretStr
 from pydantic_settings import BaseSettings,SettingsConfigDict
 
 
@@ -36,3 +37,25 @@ class SecuritySettings(BaseSettings):
     )
 
 security_settings = SecuritySettings()
+
+
+class MailSettings(BaseSettings):
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: SecretStr
+    MAIL_FROM: EmailStr
+    MAIL_FROM_NAME: str
+    MAIL_SERVER: str
+    MAIL_PORT: int
+
+
+
+
+
+
+
+
+    model_config=SettingsConfigDict(
+        env_file="./.env",
+        env_ignore= True,
+        extra="ignore",
+    )
