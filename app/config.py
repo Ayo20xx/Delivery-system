@@ -1,4 +1,4 @@
-from pydantic import EmailStr, SecretStr
+
 from pydantic_settings import BaseSettings,SettingsConfigDict
 
 
@@ -41,16 +41,15 @@ security_settings = SecuritySettings()
 
 class MailSettings(BaseSettings):
     MAIL_USERNAME: str
-    MAIL_PASSWORD: SecretStr
-    MAIL_FROM: EmailStr
+    MAIL_PASSWORD: str 
+    MAIL_FROM: str
     MAIL_FROM_NAME: str
     MAIL_SERVER: str
     MAIL_PORT: int
-
-
-
-
-
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+    USE_CREDENTIALS: bool = True
+    VALIDATE_CERTS: bool = True
 
 
 
@@ -59,3 +58,7 @@ class MailSettings(BaseSettings):
         env_ignore= True,
         extra="ignore",
     )
+
+
+
+mail_settings = MailSettings()
