@@ -51,7 +51,6 @@ class ShipmentService(BaseService):
                 status_code= status.HTTP_401_UNAUTHORIZED,
                 details="not authorized",
             )
-            shipment=await self.get(id)
         
             if not shipment:          
                 raise HTTPException(status_code=404, detail="shipment not found")
@@ -63,7 +62,7 @@ class ShipmentService(BaseService):
                  shipment.estimated_delivery =shipment_update.estimated_delivery
             if len(update)> 1 or not shipment_update.estimated_delivery:
                 self.event_service.add(
-                    shipment=shipment
+                    shipment=shipment,
                     **update,
                 )
             return await self._update(shipment)
