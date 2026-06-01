@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel,Field
+from pydantic import BaseModel, EmailStr,Field
 from datetime import datetime
 from ...database.model import ShipmentEvent, ShipmentStatus
 
@@ -16,7 +16,8 @@ class ShipmentRead(Baseshipment):
     estimated_delivery : datetime
 
 class ShipmentCreate(Baseshipment):
-  pass
+  client_contact_email : EmailStr
+  client_contact_phone : int | None
 
 class ShipmentUpdate(BaseModel):
     location : int | None=Field( default=None)

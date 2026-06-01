@@ -2,6 +2,7 @@
 from app.database.model import Shipment, ShipmentEvent, ShipmentStatus
 from app.services import  shipment
 from app.services.base import BaseService
+from app.services.Notification import NotificationService
 
 
 
@@ -9,6 +10,7 @@ from app.services.base import BaseService
 class ShipmentEventService(BaseService):
     def __init__(self, session):
         super().__init__(ShipmentEvent, session)
+        self.notification = NotificationService()
 
     async def add(
             self ,
@@ -29,6 +31,7 @@ class ShipmentEventService(BaseService):
             shipment_id= shipment.id,
 
         )
+        await self._notify(shipment,status)
         return await self._add(new_event)
     
     async def get_latest_event(self,shipments:Shipment):
@@ -47,3 +50,19 @@ class ShipmentEventService(BaseService):
                 return "cancelled by seller"
             case _:
                 return f"scanned at {location}"
+            
+    async def _notify(self,shipment:Shipment,status:ShipmentStatus):
+        match status:
+            case ShipmentStatus.placed :
+                await self.notification.send_email(
+                    recipients=[Shipment.client_contact_email],
+                    subject="your order is shipped 🚌",
+                    body=f"Your order with {shipment.Seller.name} is picked up by {shipment.delivery_partner.name} and is on its way to you ",
+                )
+            case ShipmentStatus.out_for_delivery:
+                await self.notification.send_email(
+                    recipients=[Shipment.client_contact_email],
+                    subject="your order is Arriving 🚌",
+                    body="Your order with being delivered ,please ensure you are available ",
+                )
+

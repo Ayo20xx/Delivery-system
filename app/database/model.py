@@ -27,6 +27,10 @@ class Shipment (SQLModel,table=True):
                 postgresql.TIMESTAMP,
                 default=datetime.now
          ))
+    client_contact_email: EmailStr 
+    client_contact_email: int | None
+
+
     content : str
     weight : float = Field(le=25)
     destination : int
