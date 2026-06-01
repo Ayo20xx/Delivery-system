@@ -8,7 +8,7 @@ from app.services.Delivery_partner import DeliveryPartnerService
 from app.services.Shipment_event import ShipmentEventService
 from app.services.seller import SellerService
 from app.services.shipment import ShipmentService
-from fastapi import Depends, HTTPException,status
+from fastapi import BackgroundTasks, Depends, HTTPException,status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
@@ -17,8 +17,8 @@ from app.utils import decode_access_token
 
 SessionDep=Annotated[AsyncSession,Depends(get_session)]
 
-async def get_shipment_service(session:SessionDep):
-    return ShipmentService(session,DeliveryPartnerService(session),ShipmentEventService(session))
+async def get_shipment_service(session:SessionDep,tasks: BackgroundTasks):
+    return ShipmentService(session,DeliveryPartnerService(session),ShipmentEventService(session,tasks))
 
 async def get_seller_service(session:SessionDep):
     return SellerService(session)
