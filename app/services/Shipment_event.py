@@ -53,6 +53,12 @@ class ShipmentEventService(BaseService):
                 return f"scanned at {location}"
             
     async def _notify(self,shipment:Shipment,status:ShipmentStatus):
+
+        if status == ShipmentStatus.in_transit:
+            return 
+
+
+
         subject : str
         context = {}
         template_name : str
@@ -61,6 +67,7 @@ class ShipmentEventService(BaseService):
         match status:
             case ShipmentStatus.placed :
                     subject="your order is shipped 🚌",
+                    context["id"] = shipment.id
                     context["seller"] = shipment.seller.name,
                     context[ "partner"] = shipment.delivery_partner.name
                     template_name= "mail_placed.html" 
@@ -68,21 +75,15 @@ class ShipmentEventService(BaseService):
 
             case ShipmentStatus.out_for_delivery:
                 subject="your order is out for delivery 🚌",
-                context["seller"] = shipment.seller.name,
-                context[ "partner"] = shipment.delivery_partner.name
                 template_name= "mail_out_for_delivery.html" 
 
 
             case ShipmentStatus.delivered:
                 subject="your order is delivered 🚌",
-                context["seller"] = shipment.seller.name,
-                context[ "partner"] = shipment.delivery_partner.name
                 template_name= "mail_delivered.html" 
 
             case ShipmentStatus.cancelled:
                 subject="your order has been cancelled 🚌",
-                context["seller"] = shipment.seller.name,
-                context[ "partner"] = shipment.delivery_partner.name
                 template_name= "mail_cancelled.html" 
 
         await self.notification.send_email_with_template(

@@ -1,6 +1,7 @@
 <body>
-    <p>order with {sseller} is picked up by </p>
-    <p>  {partner} and is on its way to you </p>
+    <p>order with {{seller}} is picked up by </p>
+    <p>  {{partner}} and is on its way to you.Use the below link to track your order </p>
     <br>
+    <a href="http://localhost:8000/shipment?id={{id}}">Track Now</a>
     <p>Powered by Fastship</p>
 </body>
