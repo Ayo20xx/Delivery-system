@@ -62,3 +62,22 @@ class MailSettings(BaseSettings):
 
 
 mail_settings = MailSettings()
+
+
+
+
+class AppSettings(BaseSettings):
+    App_Name : str
+    App_domain : str
+
+
+
+
+
+    model_config=SettingsConfigDict(
+        env_file="./.env",
+        env_ignore= True,
+        extra="ignore",
+    )
+
+app_settings= AppSettings()

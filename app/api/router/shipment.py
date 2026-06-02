@@ -24,6 +24,7 @@ async def Track_id(request:Request,id: UUID, Service:ShipmentServiceDep):
    context["status"] = shipment.status
    context["Partner"] = shipment.delivery_partner.name
    context["timeline"] = shipment.timeline
+   
   
    return templates.TemplateResponse(
       request=request,

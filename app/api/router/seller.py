@@ -28,3 +28,8 @@ async def Login_seller(request_form:Annotated[OAuth2PasswordRequestForm,Depends(
 @router.get("/logout")
 async def logout_seller(token_data: Annotated[dict,Depends(get_seller_access_token)]):
    return await add_jti_to_blacklist(token_data["jti"] )                       
+
+@router.get("/verify")
+async def verify_seller_email(token:str,service:ServiceSellerDep):
+    await service.verify_email(token)
+    return {"detail": "Account Verified"}
