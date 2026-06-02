@@ -2,6 +2,7 @@
 from fastapi import BackgroundTasks
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from pydantic import EmailStr
+from app.utils import TEMPLATE_DIR
 from config import mail_settings
 
 class NotificationService:
@@ -9,7 +10,8 @@ class NotificationService:
         self.tasks = tasks
         self.fastmail=FastMail(
                 ConnectionConfig(
-                **mail_settings.model_dump()
+                **mail_settings.model_dump(),
+                TEMPLATE_FOLDER = TEMPLATE_DIR
                 ))
     
     
@@ -24,6 +26,17 @@ class NotificationService:
             )
 
         )
-        
+    async def send_email_with_template(self,recipients: list[EmailStr],subject:str,context:dict,template_name: str):
+        self.tasks.add_task(
+            self.fastmail.send_message,
+            message=MessageSchema(
+            recipients= recipients,
+            subject= subject,
+            template_body= context,
+            subtype=MessageType.html,
+            ),
+            template_name=template_name,
+                )
+
         
     

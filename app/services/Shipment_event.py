@@ -55,9 +55,17 @@ class ShipmentEventService(BaseService):
     async def _notify(self,shipment:Shipment,status:ShipmentStatus):
         match status:
             case ShipmentStatus.placed :
-                await self.notification.send_email(
+                await self.notification.send_email_with_template(
                     recipients=[Shipment.client_contact_email],
                     subject="your order is shipped 🚌",
+                    context={
+                        "seller" : shipment.seller.name,
+                        "partner" : shipment.delivery_partner.name
+                    },
+                    template_name= "mail_placed"
+
+                )
+                await self.notification.send_email(
                     body=f"Your order with {shipment.Seller.name} is picked up by {shipment.delivery_partner.name} and is on its way to you ",
                 )
             case ShipmentStatus.out_for_delivery:
