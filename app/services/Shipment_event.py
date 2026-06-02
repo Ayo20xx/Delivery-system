@@ -53,25 +53,40 @@ class ShipmentEventService(BaseService):
                 return f"scanned at {location}"
             
     async def _notify(self,shipment:Shipment,status:ShipmentStatus):
+        subject : str
+        context = {}
+        template_name : str
+
+
         match status:
             case ShipmentStatus.placed :
-                await self.notification.send_email_with_template(
-                    recipients=[Shipment.client_contact_email],
                     subject="your order is shipped 🚌",
-                    context={
-                        "seller" : shipment.seller.name,
-                        "partner" : shipment.delivery_partner.name
-                    },
-                    template_name= "mail_placed"
+                    context["seller"] = shipment.seller.name,
+                    context[ "partner"] = shipment.delivery_partner.name
+                    template_name= "mail_placed.html" 
+                
 
-                )
-                await self.notification.send_email(
-                    body=f"Your order with {shipment.Seller.name} is picked up by {shipment.delivery_partner.name} and is on its way to you ",
-                )
             case ShipmentStatus.out_for_delivery:
-                await self.notification.send_email(
-                    recipients=[Shipment.client_contact_email],
-                    subject="your order is Arriving 🚌",
-                    body="Your order with being delivered ,please ensure you are available ",
-                )
+                subject="your order is out for delivery 🚌",
+                context["seller"] = shipment.seller.name,
+                context[ "partner"] = shipment.delivery_partner.name
+                template_name= "mail_out_for_delivery.html" 
 
+
+            case ShipmentStatus.delivered:
+                subject="your order is delivered 🚌",
+                context["seller"] = shipment.seller.name,
+                context[ "partner"] = shipment.delivery_partner.name
+                template_name= "mail_delivered.html" 
+
+            case ShipmentStatus.cancelled:
+                subject="your order has been cancelled 🚌",
+                context["seller"] = shipment.seller.name,
+                context[ "partner"] = shipment.delivery_partner.name
+                template_name= "mail_cancelled.html" 
+
+        await self.notification.send_email_with_template(
+            recipients= [shipment.client_contact_email],
+            subject= subject,
+            context = context,
+            template_name = template_name, )
