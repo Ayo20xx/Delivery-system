@@ -103,3 +103,17 @@ class UserService(BaseService):
        return token
 
         
+    async def send_password_reset_link(self,email,router_prefix):
+        user =await self._get_by_email(email)
+
+        token=generate_url_safe_token({
+            "id": user.id,},salt= "password-reset")
+        
+        await self.notification_service.send_email_with_template(
+            recipients=[user.email],
+            subject="Fastship account password reset",
+            context={
+                "username" :user.name,
+                "reset_url":F"http://{app_settings.App_domain/{router_prefix}}/reset_password?idtoken={token}"
+            },
+            template_name ="mail_password_reset.html")

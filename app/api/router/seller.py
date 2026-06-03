@@ -3,6 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import EmailStr
 
 from app.api.dependencies import ServiceSellerDep, get_seller_access_token
 from app.api.schemas.seller import SellerCreate ,SellerRead
@@ -25,6 +26,8 @@ async def Login_seller(request_form:Annotated[OAuth2PasswordRequestForm,Depends(
     }
 
 
+
+
 @router.get("/logout")
 async def logout_seller(token_data: Annotated[dict,Depends(get_seller_access_token)]):
    return await add_jti_to_blacklist(token_data["jti"] )                       
@@ -33,3 +36,10 @@ async def logout_seller(token_data: Annotated[dict,Depends(get_seller_access_tok
 async def verify_seller_email(token:str,service:ServiceSellerDep):
     await service.verify_email(token)
     return {"detail": "Account Verified"}
+
+@router.get("/forgot_password")
+async def forgot_password(email:EmailStr,service:ServiceSellerDep):
+    await service.send_password_reset_link(email,router.prefix)
+    return {"detail": "check email for password reset link"}
+
+
