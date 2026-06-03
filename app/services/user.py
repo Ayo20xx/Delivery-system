@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from click import UUID
 from fastapi import BackgroundTasks, HTTPException,status
 from sqlalchemy import select
@@ -107,7 +109,7 @@ class UserService(BaseService):
         user =await self._get_by_email(email)
 
         token=generate_url_safe_token({
-            "id": user.id,},salt= "password-reset")
+            "id": str(user.id),},salt= "password-reset")
         
         await self.notification_service.send_email_with_template(
             recipients=[user.email],
@@ -117,3 +119,19 @@ class UserService(BaseService):
                 "reset_url":F"http://{app_settings.App_domain/{router_prefix}}/reset_password?idtoken={token}"
             },
             template_name ="mail_password_reset.html")
+    async def reset_password(self, token:str, password:str ):
+        token_data=decode_url_safe_token(
+            token,
+            salt="password-reset",
+            expiry= timedelta(days=1),
+
+              )
+        if not token_data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="invalid token"
+            )
+        user=await self._get(UUID(token_data["id"]))
+
+        user.password_hash = password_context.hash(password)
+        await self._update(user)
