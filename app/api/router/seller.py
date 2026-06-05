@@ -43,6 +43,7 @@ async def forgot_password(email:EmailStr,service:ServiceSellerDep):
     return {"detail": "check email for password reset link"}
 
 
+
 @router.get("/reset_password")
 async def reset_password(token:str,password:str,service:ServiceSellerDep):
     await service.reset_password(token,password)

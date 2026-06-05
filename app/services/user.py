@@ -1,13 +1,13 @@
 from datetime import timedelta
 
-from click import UUID
+from uuid import UUID
 from fastapi import BackgroundTasks, HTTPException,status
 from sqlalchemy import select
 
 from app.utils import decode_url_safe_token, generate_access_token, generate_url_safe_token
 
 from .base import BaseService
-from app.database.model import User, seller
+from app.database.model import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from passlib.context import CryptContext
@@ -63,10 +63,16 @@ class UserService(BaseService):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="invalid token"
             )
-        
-        user=self._get( UUID(token_data["id"]))
+
+        user = await self._get(UUID(token_data["id"]))
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="user not found"
+            )
 
         user.email_verified = True
+        await self._update(user)
 
 
 
@@ -77,7 +83,7 @@ class UserService(BaseService):
 
 
     async def _get_by_email(self,email) -> User | None :
-        return await self.session.scalar(select(seller).where(seller.email==email))
+        return await self.session.scalar(select(self.model).where(self.model.email==email))
     
 
 
@@ -106,19 +112,25 @@ class UserService(BaseService):
 
         
     async def send_password_reset_link(self,email,router_prefix):
-        user =await self._get_by_email(email)
+        user = await self._get_by_email(email)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="email not found"
+            )
 
-        token=generate_url_safe_token({
-            "id": str(user.id),},salt= "password-reset")
-        
+        token = generate_url_safe_token({
+            "id": str(user.id),
+        }, salt="password-reset")
+
         await self.notification_service.send_email_with_template(
             recipients=[user.email],
             subject="Fastship account password reset",
             context={
-                "username" :user.name,
-                "reset_url":F"http://{app_settings.App_domain/{router_prefix}}/reset_password?idtoken={token}"
+                "username": user.name,
+                "reset_url": f"http://{app_settings.App_domain}{router_prefix}/reset_password?idtoken={token}"
             },
-            template_name ="mail_password_reset.html")
+            template_name="mail_password_reset.html")
     async def reset_password(self, token:str, password:str ):
         token_data=decode_url_safe_token(
             token,

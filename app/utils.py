@@ -11,7 +11,7 @@ _serializer=URLSafeTimedSerializer(security_settings.JWT_SECRET)
 
 
 APP_DIR = Path(__file__).resolve().parent
-TEMPLATE_DIR = APP_DIR/"template"
+TEMPLATE_DIR = APP_DIR/"templates"
 
 def generate_access_token(data : dict,exp:timedelta=timedelta(seconds=15)):
     token=jwt.encode(
@@ -47,7 +47,7 @@ def decode_access_token(token:str)-> dict | None :
 
 token=_serializer.dumps({"email":"user@his.site"})
 
-token_data=_serializer.loads(token,max_age=timedelta(day=1).total_seconds)
+token_data=_serializer.loads(token,max_age=timedelta(days=1).total_seconds())
 
 
 

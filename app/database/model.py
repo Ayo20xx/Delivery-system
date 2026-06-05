@@ -27,8 +27,8 @@ class Shipment (SQLModel,table=True):
                 postgresql.TIMESTAMP,
                 default=datetime.now
          ))
-    client_contact_email: EmailStr 
-    client_contact_email: int | None
+    client_contact_email: EmailStr
+    client_contact_phone: int | None
 
 
     content : str
@@ -68,7 +68,7 @@ class ShipmentEvent(SQLModel,table=True):
        description : str | None =Field(default=None)
 
        shipment_id : UUID = Field(foreign_key="shipment.id")
-       shipment: Shipment = Relationship(back_populates="timeline ",sa_relationship_kwargs={"lazy":"selectin"})
+       shipment: Shipment = Relationship(back_populates="timeline",sa_relationship_kwargs={"lazy":"selectin"})
 
 
 
@@ -128,7 +128,7 @@ class DeliveryPartner(SQLModel,table = True) :
 
       @property
       def active_shipments(self):
-             return [shipment for shipment in self.shipments if shipment.status != ShipmentStatus.delivered or shipment.status != ShipmentStatus.cancelled]
+             return [shipment for shipment in self.shipments if shipment.status != ShipmentStatus.delivered and shipment.status != ShipmentStatus.cancelled]
       @property
       def current_handling_capacity(self):
              return self.max_handling_capacity - len(self.active_shipments)

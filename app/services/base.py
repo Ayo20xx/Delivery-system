@@ -20,8 +20,12 @@ class BaseService:
         return entity 
     
     async def _update(self,entity:SQLModel):
-        return await self._create(entity)
+        self.session.add(entity)
+        await self.session.commit()
+        await self.session.refresh(entity)
+        return entity
     
     async def _delete(self,entity:SQLModel):
         await self.session.delete(entity)
+        await self.session.commit()
 
