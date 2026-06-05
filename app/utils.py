@@ -45,12 +45,6 @@ def decode_access_token(token:str)-> dict | None :
     
 
 
-token=_serializer.dumps({"email":"user@his.site"})
-
-token_data=_serializer.loads(token,max_age=timedelta(days=1).total_seconds())
-
-
-
 def generate_url_safe_token(data:dict,salt: str | None = None) -> str:
     return _serializer.dumps(data,salt=salt)
 
