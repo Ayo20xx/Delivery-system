@@ -128,7 +128,7 @@ class UserService(BaseService):
             subject="Fastship account password reset",
             context={
                 "username": user.name,
-                "reset_url": f"http://{app_settings.App_domain}{router_prefix}/reset_password?idtoken={token}"
+                "reset_url": f"http://{app_settings.App_domain}{router_prefix}/reset_password_form?idtoken={token}"
             },
             template_name="mail_password_reset.html")
     async def reset_password(self, token:str, password:str ):

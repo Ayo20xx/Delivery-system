@@ -1,14 +1,16 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
 from pydantic import EmailStr
 
 from app.api.dependencies import ServiceSellerDep, get_seller_access_token
 from app.api.schemas.seller import SellerCreate ,SellerRead
 from app.database.redis import add_jti_to_blacklist
-
+from app.utils import TEMPLATE_DIR
+from config import app_settings
 router = APIRouter (prefix="/seller")
 
 
@@ -42,10 +44,23 @@ async def forgot_password(email:EmailStr,service:ServiceSellerDep):
     await service.send_password_reset_link(email,router.prefix)
     return {"detail": "check email for password reset link"}
 
+@router.get("/reset_password_form")
+async def reset_password_form (request: Request,token:str):
+    templates=Jinja2Templates(TEMPLATE_DIR)
+
+    return templates.TemplateResponse(
+        request= request,
+        name= "Password_reset_form",
+        context={
+            "reset_url":f"http://{app_settings.App_domain}{router.prefix}/reset_password?token={token}"
+        }
+    )
 
 
-@router.get("/reset_password")
-async def reset_password(token:str,password:str,service:ServiceSellerDep):
+
+
+@router.post("/reset_password")
+async def reset_password(token:str,password:Annotated[str ,Form()],service:ServiceSellerDep):
     await service.reset_password(token,password)
     return {"detail": "Password successfully reset"}
 
