@@ -1,25 +1,14 @@
-import asyncio
-
-from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+from twilio.rest import Client
 from app.config import mail_settings
 
-fastmail=FastMail(
-    ConnectionConfig(
-     **mail_settings.model_dump()
-        
-    )
+client=Client(
+    mail_settings.TWILIO_SID,
+    mail_settings.TWILIO_AUTH_TOKEN
 )
 
-async def send_message():
-    await fastmail.send_message(
-        message= MessageSchema(
-            recipients=[""],
-            subject="YOUR EMAIL DELIVERED WITH FAST SHIP",
-            body= "  ",
-            subtype= MessageType.plain,
-        )
-    )
-    print("email sent ")
+client.messages.create(
+    from_= mail_settings.TWILIO_PHONE_NUMBER,
+    to= "+2340162301645",
+    body= "my bro how are you doi"
 
-
-asyncio.run(send_message())
+)

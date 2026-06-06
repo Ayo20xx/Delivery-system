@@ -52,6 +52,12 @@ class MailSettings(BaseSettings):
     VALIDATE_CERTS: bool = True
 
 
+    TWILIO_SID : str
+    TWILIO_PHONE_NUMBER :str
+    TWILIO_AUTH_TOKEN: str
+
+
+
 
     model_config=SettingsConfigDict(
         env_file="./.env",
