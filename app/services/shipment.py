@@ -52,6 +52,8 @@ class ShipmentService(BaseService):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="not authorized",
             )
+        if shipment_update.status == ShipmentStatus.delivered:
+            pass
 
         update_data = shipment_update.model_dump(exclude_none=True)
         if not update_data:
