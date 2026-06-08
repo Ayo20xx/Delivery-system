@@ -1,12 +1,13 @@
 
 from uuid import UUID
 
-from app.api.dependencies import DeliveryDep, SellerDep
+from app.api.dependencies import  SellerDep
 from app.database.model import DeliveryPartner, Shipment, seller
 from app.api.schemas.shipment import ShipmentCreate, ShipmentUpdate, ShipmentStatus
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status
+from app.database.redis import is_verification_code
 from app.services.Delivery_partner import DeliveryPartnerService
 from app.services.Shipment_event import ShipmentEventService
 from app.services.base import BaseService
@@ -53,7 +54,14 @@ class ShipmentService(BaseService):
                 detail="not authorized",
             )
         if shipment_update.status == ShipmentStatus.delivered:
-            pass
+            code=await is_verification_code(shipment.id)
+
+            if code != shipment_update.verification_code:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    details= "client not authorised",
+                )
+
 
         update_data = shipment_update.model_dump(exclude_none=True)
         if not update_data:
