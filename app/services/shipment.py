@@ -63,7 +63,7 @@ class ShipmentService(BaseService):
                 )
 
 
-        update_data = shipment_update.model_dump(exclude_none=True)
+        update_data = shipment_update.model_dump(exclude_none=True,exclude="verification_code")
         if not update_data:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

@@ -10,7 +10,9 @@ class NotificationService:
         self.tasks = tasks
         self.fastmail=FastMail(
                 ConnectionConfig(
-                **mail_settings.model_dump(),
+                **mail_settings.model_dump(
+                    exclude=["TWILIO_SID","TWILIO_AUTH_TOKEN","TWILIO_PHONE_NUMBER"]
+                ),
                 TEMPLATE_FOLDER = TEMPLATE_DIR
                 ))
         self.twilio_client = Client(
