@@ -132,3 +132,19 @@ class DeliveryPartner(SQLModel,table = True) :
       @property
       def current_handling_capacity(self):
              return self.max_handling_capacity - len(self.active_shipments)
+
+class Review(User,table=True):
+        __tablename__="reviews"
+        id:  UUID =Field(sa_column=Column(
+            postgresql.UUID,
+            default= uuid4,
+            primary_key= True,
+            
+      ))
+        created_at : datetime = Field(sa_column=Column(
+                postgresql.TIMESTAMP,
+                default=datetime.now
+         ))
+        
+        rating : int= Field(ge=1,le=5)
+        comment : str | None
