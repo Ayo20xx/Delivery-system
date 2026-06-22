@@ -94,7 +94,7 @@ class ShipmentEventService(BaseService):
                     await self.notification.send_email(
                         recipients=[shipment.client_contact_email],
                         subject=" Order is arriving",
-                        body = f" Your order is arriving soon! Share your {code} with your delivery executive to recive your package "
+                        body = f" Your order is arriving soon! Share your {code} with your delivery executive to receive your package "
                     )
 
             case ShipmentStatus.delivered:

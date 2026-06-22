@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from app.api.dependencies import DeliveryDep, SellerDep, ShipmentServiceDep
 from app.database.model import Shipment
-from app.api.schemas.shipment import ShipmentCreate, ShipmentRead, ShipmentUpdate
+from app.api.schemas.shipment import ShipmentCreate, ShipmentRead, ShipmentReview, ShipmentUpdate
 from app.utils import TEMPLATE_DIR
 
 router = APIRouter()
@@ -64,4 +64,10 @@ async def Update_shipment(id: UUID, shipment_update: ShipmentUpdate, Service: Sh
 @router.get("/cancel", response_model=ShipmentRead)
 async def cancel_shipment(id: UUID, seller: SellerDep, Service: ShipmentServiceDep) -> Shipment:
     return await Service.cancel(id, seller)
+
+@router.post("/review")
+async def submit_review(token: str,review : ShipmentReview ,service:ShipmentServiceDep):
+    service.rate(token,review)
+    return {"message":" review submitted"}
+
 
