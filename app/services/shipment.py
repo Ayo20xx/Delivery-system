@@ -2,8 +2,8 @@
 from uuid import UUID
 
 from app.api.dependencies import  SellerDep
-from app.database.model import DeliveryPartner, Shipment, seller
-from app.api.schemas.shipment import ShipmentCreate, ShipmentUpdate, ShipmentStatus
+from app.database.model import DeliveryPartner, Review, Shipment, seller
+from app.api.schemas.shipment import ShipmentCreate, ShipmentReview, ShipmentUpdate, ShipmentStatus
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status
@@ -11,6 +11,7 @@ from app.database.redis import is_verification_code
 from app.services.Delivery_partner import DeliveryPartnerService
 from app.services.Shipment_event import ShipmentEventService
 from app.services.base import BaseService
+from app.utils import decode_url_safe_token
 
 
 
@@ -87,6 +88,21 @@ class ShipmentService(BaseService):
             )
 
         return await self._update(shipment)
+    async def rate (self,token : str ,review: ShipmentReview):
+        token_data = decode_url_safe_token(token)
+        if not token_data:
+            return HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not authorised"
+            )
+        
+        shipment= await self.get( UUID(token_data["id"]))
+        new_review = Review(
+            **review.model_dump(),
+            shipment_id=shipment.id
+            )
+        
+        await self.session.add(new_review)
             
     async def cancel(self, id: UUID, seller: SellerDep) -> Shipment:
         shipment = await self.get(id)
@@ -116,3 +132,4 @@ class ShipmentService(BaseService):
         if not shipment:
             raise HTTPException(status_code=404, detail="shipment not found")
         await self._delete(shipment)
+    
