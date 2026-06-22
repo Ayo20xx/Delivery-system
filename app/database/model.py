@@ -50,6 +50,8 @@ class Shipment (SQLModel,table=True):
     @property
     def status(self):
            return self.timeline[-1].status if len(self.timeline) > 0 else None
+    
+    review : "Review " = Relationship(back_populates= "shipment",sa_relationship_kwargs={"lazy":"selectin"})
 
 class ShipmentEvent(SQLModel,table=True):
        __tablename__="shipment_event"
@@ -147,4 +149,6 @@ class Review(User,table=True):
          ))
         
         rating : int= Field(ge=1,le=5)
-        comment : str | None
+        comment : str | None=Field(default=None)
+        shipments_id : UUID = Field(foreign_key="shipment.id")
+        shipment: Shipment = Relationship(back_populates="Review ",sa_relationship_kwargs={"lazy":"selectin"})
